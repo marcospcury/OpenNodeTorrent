@@ -1,0 +1,22 @@
+<div id="torrent_list">
+  <table class='table table-bordered table-hover table-condensed'>
+     <thead>
+       <th></th>
+       <th>Name</th>
+       <th>Uploaded</th>
+       <th>Seeds</th>
+       <th>Leechs</th>
+     </thead>
+     <tbody>
+      {{#each torrents}}
+      <tr id="torrent{{_id}}" class="torrent_row">
+        <td></td>
+        <td><a href="{{url}}">{{name}}</a></td>
+        <td>{{date_uploaded}}</td>
+        <td>{{seeds}}</td>
+        <td>{{leechs}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

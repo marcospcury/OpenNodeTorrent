@@ -1,7 +1,16 @@
 doctype 5
 html
   head
-    title= title
+    title=".:BitShare:."
     link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/javascripts/lib/bootstrap/dist/css/bootstrap.min.css')
+    block header
   body
+    #container
+      .navbar.navbar-default
+        .navbar-collapse.collapse
+          ul.nav.navbar-nav
+            li: a(href='#') Link 1
+            li: a(href='#') Link 2
+            li: a(href='#') Link 3
     block content

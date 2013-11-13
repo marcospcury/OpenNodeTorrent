@@ -1,3 +1,5 @@
+router = require './router/router'
+
 exports.start = (cb) ->
   express   = require "express"
   http     = require "http"
@@ -15,6 +17,8 @@ exports.start = (cb) ->
     app.use express.methodOverride()
     app.use app.router
     app.use express.static(path.join(__dirname, '..', "public"))
+
+  router.route app
 
   app.configure "development", ->
     app.use express.errorHandler()

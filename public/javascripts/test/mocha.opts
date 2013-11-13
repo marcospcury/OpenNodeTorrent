@@ -1,0 +1,4 @@
+--require test/support/runnerSetup.js
+--timeout 40000
+--reporter nyan
+--recursive

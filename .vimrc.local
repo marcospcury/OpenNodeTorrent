@@ -1,1 +1,1 @@
-let NERDTreeIgnore=['\~$', '\.js$', '\.css$', '\.map', 'node_modules$', 'compiledPublic']
+let NERDTreeIgnore=['\~$', '\.js$', '\.map', 'dist$', 'node_modules$', 'compiledPublic']
