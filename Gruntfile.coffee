@@ -132,6 +132,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'compile:server', ['coffee:app']
   grunt.registerTask 'compile:test', ['coffee:test']
   grunt.registerTask 'test:client', ['compile:client', 'mochacov:client']
+  grunt.registerTask 'test:travis', ['compile', 'mochacov']
   grunt.registerTask 'test:unit', ['compile:test', 'compile:server', 'mochacov:server_unit']
   grunt.registerTask 'nodeInspector', [ 'shell:nodeInspector' ]
   grunt.registerTask 'compileAndTest', ->
