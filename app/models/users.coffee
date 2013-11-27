@@ -8,5 +8,9 @@ userSchema = new mongoose.Schema
   verified:         Boolean
   isAdmin:          Boolean
   isModerator:      Boolean
+  profile: [
+    uploaded: Number
+    downloaded: Number
+  ]
 
 module.exports = User = mongoose.model 'user', userSchema

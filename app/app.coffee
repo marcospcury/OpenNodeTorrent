@@ -2,8 +2,9 @@ router = require './router/router'
 
 exports.start = (cb) ->
   express   = require "express"
-  http     = require "http"
-  path     = require "path"
+  http      = require "http"
+  path      = require "path"
+  mongoose  = require "mongoose"
 
   app = express()
   
@@ -18,6 +19,7 @@ exports.start = (cb) ->
     app.use app.router
     app.use express.static(path.join(__dirname, '..', "public"))
 
+  mongoose.connect 'mongodb://localhost/opentorrent'
   router.route app
 
   app.configure "development", ->

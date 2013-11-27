@@ -5,6 +5,7 @@ torrentSchema = new mongoose.Schema
   name:               type: String, required: true
   description:        type: String, required: true
   url:                String
+  category:           String
   keywords:           [String]
   numFiles:           Number
   files: [
@@ -17,10 +18,14 @@ torrentSchema = new mongoose.Schema
   downloads:          type: Number, default: -> 0
   seeders: [
     user: type: mongoose.Schema.Types.ObjectId, ref: 'user'
+    port: Number
+    ip: String
     uploaded: Number
   ]
   leechers: [
     user: type: mongoose.Schema.Types.ObjectId, ref: 'user'
+    port: Number
+    ip: String
     downloaded: Number
   ]
   numSeeders:         type: Number, default: -> 0
@@ -29,7 +34,7 @@ torrentSchema = new mongoose.Schema
   screenshots:        [String]
   imdbId:             String
 
-torrentSchema.methods.toSimpleTorrent = ->
+torrentSchema.methods.toSimple = ->
    _id: @_id
    name: @name
    description: @description
@@ -44,7 +49,8 @@ torrentSchema.methods.toSimpleTorrent = ->
 
 torrentSchema.path('name').set (val) ->
   @url = "torrent/#{@_id}"
-  @keywords = val.split " "
+  cleanWords = val.replace('- ', '').toLowerCase()
+  @keywords = cleanWords.replace('-', '').split " "
   val
 
 torrentSchema.path('files').set (val) ->
@@ -53,18 +59,41 @@ torrentSchema.path('files').set (val) ->
   @numFiles = val.length
   val
 
-torrentSchema.methods.addSeeder = (seeder) ->
-  @seeders.push user:seeder, uploaded:0
-  @numSeeders = 0 unless @numSeeders?
-  @numSeeders += 1
+torrentSchema.methods.addSeeder = (peerInfo) ->
+  user = _.findWhere(@seeders, {user: peerInfo.user._id})
+  if user?
+    user.uploaded += peerInfo.uploaded
+  else
+    @seeders.push _id:peerInfo.user._id, user:peerInfo.user, uploaded:peerInfo.uploaded, ip:peerInfo.ip, port:peerInfo.port
+    @numSeeders = 0 unless @numSeeders?
+    @numSeeders += 1
    
-torrentSchema.methods.removeSeeder = (seeder) ->
-  @seeders = _.without(@seeders, _.findWhere(@seeders, {user: seeder._id}))
+torrentSchema.methods.addLeecher = (peerInfo) ->
+  user = _.findWhere(@leechers, {user: peerInfo.user._id})
+  if user?
+    user.downloaded += peerInfo.downloaded
+  else
+    @leechers.push _id:peerInfo.user._id, user:peerInfo.user, downloaded:peerInfo.downloaded, ip:peerInfo.ip, port:peerInfo.port
+    @numLeechers = 0 unless @numLeechers
+    @numLeechers += 1
+
+torrentSchema.methods.removeSeeder = (user) ->
+  @seeders.id(user.id).remove()
   @numSeeders -= 1
+
+torrentSchema.methods.removeLeecher = (user) ->
+  @leechers.id(user.id).remove()
+  @numLeechers -= 1
+
+torrentSchema.methods.getPeers = ->
+  peers = []
+  _.map @seeders, (s) -> peers.push port:s.port, ip:s.ip
+  _.map @leechers, (l) -> peers.push port:l.port, ip:l.ip
+  peers
 
 module.exports = Torrent = mongoose.model 'torrent', torrentSchema
 
-Torrent.search = (search, cb) ->
-  Torrent.find keywords: search.toLowerCase(), (err, torrents) ->
+Torrent.search = (searchTerm, cb) ->
+  Torrent.find(keywords: searchTerm.toLowerCase()).populate('userUpload').exec (err, torrents) ->
     return cb err if err
     cb null, torrents

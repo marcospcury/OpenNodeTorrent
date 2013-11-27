@@ -17,7 +17,7 @@ describe 'Torrent Model', ->
     userLeecher2 = new User name: 'user_leecher_2'
 
     torrent = new Torrent
-      name: "Torrent 1"
+      name: "Torrent - 1"
       files: [{name: 'file 1', size: 10}, {name: 'file 2', size:15}, {name: 'file 3', size:15}]
       userUpload: user
 
@@ -41,9 +41,10 @@ describe 'Torrent Model', ->
     expect(torrent.added.getDate()).to.equal new Date().getDate()
     done()
   it 'Should produce simple model', (done) ->
-    simple = torrent.toSimpleTorrent()
+    simple = torrent.toSimple()
     expect(simple._id).to.equal torrent._id
     expect(simple.name).to.equal torrent.name
+    expect(simple.category).to.equal torrent.category
     expect(simple.description).to.equal torrent.description
     expect(simple.numFiles).to.equal torrent.numFiles
     expect(simple.numComments).to.equal torrent.numComments
@@ -53,13 +54,34 @@ describe 'Torrent Model', ->
     expect(simple.numLeechers).to.equal torrent.numLeechers
     expect(simple.uploaded).to.equal torrent.userUpload.name
     done()
-  it 'Should add a new seeders', (done) ->
-    torrent.addSeeder userSeeder
-    torrent.addSeeder userSeeder2
+  it 'Should add a new seeder', (done) ->
+    torrent.addSeeder { user:userSeeder, uploaded:0, ip:'', port:10}
+    torrent.addSeeder { user:userSeeder2, uploaded:0, ip:'', port:10}
     expect(torrent.numSeeders).to.equal 2
+    done()
+  it 'Should update seeder upload ammount', (done) ->
+    torrent.addSeeder { user:userSeeder, uploaded:15, ip:'', port:10}
+    expect(torrent.seeders[0].uploaded).to.equal 15
     done()
   it 'Should remove one specific seeder', (done) ->
     torrent.removeSeeder userSeeder
     expect(torrent.numSeeders).to.equal 1
     expect(torrent.seeders[0].user).to.equal userSeeder2._id
+    done()
+  it 'Should add a new leecher', (done) ->
+    torrent.addLeecher { user:userLeecher, downloaded:0, ip:'', port:10 }
+    torrent.addLeecher { user:userLeecher2, downloaded:0, ip:'', port:10 }
+    expect(torrent.numLeechers).to.equal 2
+    done()
+  it 'Should update leecher download ammount', (done) ->
+    torrent.addLeecher { user:userLeecher, downloaded:25, ip:'', port:10 }
+    expect(torrent.leechers[0].downloaded).to.equal 25
+    done()
+  it 'Should remove one specific leecher', (done) ->
+    torrent.removeLeecher userLeecher
+    expect(torrent.numLeechers).to.equal 1
+    expect(torrent.leechers[0].user).to.equal userLeecher2._id
+    done()
+  it 'Should list all peers available', (done) ->
+    expect(torrent.getPeers().length).to.equal 2
     done()
