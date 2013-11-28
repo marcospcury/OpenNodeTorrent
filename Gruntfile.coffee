@@ -83,6 +83,13 @@ module.exports = (grunt) ->
         options:
           logConcurrentOutput: true
 
+    bower:
+      install:
+        options:
+          target: 'public/javascripts/lib'
+          copy: false
+          verbose: true
+
     wait:
       watch:
         options:
@@ -147,6 +154,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'heroku', ->
     home = process.env.HOME
     if home?.substr(0,11) is "/tmp/build_" #trying to identify heroku
-      grunt.task.run [ 'compile' ]
+      grunt.task.run [ 'compile', 'bower' ]
   grunt.registerTask 'default', ['compile', 'concurrent:devServer']
   grunt.registerTask 'watch:test', ['watch:compileAndTest']
