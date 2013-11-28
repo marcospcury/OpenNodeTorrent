@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
+    "postinstall": "node_modules/grunt-cli/bin/grunt heroku",
     "test": "grunt test:travis"
   },
   "dependencies": {

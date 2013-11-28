@@ -144,5 +144,9 @@ module.exports = (grunt) ->
       tasks.push 'test:unit'
       grunt.log.writeln "Running #{'server'.blue} unit tests"
     grunt.task.run tasks
+  grunt.registerTask 'heroku', ->
+    home = process.env.HOME
+    if home?.substr(0,11) is "/tmp/build_" #trying to identify heroku
+      grunt.task.run [ 'compile' ]
   grunt.registerTask 'default', ['compile', 'concurrent:devServer']
   grunt.registerTask 'watch:test', ['watch:compileAndTest']
