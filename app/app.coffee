@@ -1,25 +1,34 @@
-router = require './router/router'
-
 exports.start = (cb) ->
   express   = require "express"
   http      = require "http"
   path      = require "path"
   mongoose  = require "mongoose"
+  router    = require './router/router'
+  everyauth = require 'everyauth'
+  everyauthConfig = require './helpers/everyauthConfig'
+  MongoStore = require('connect-mongo')(express)
 
   app = express()
   
-  app.configure ->
-    app.set "port", process.env.PORT || 3000
-    app.set "views", "#{__dirname}/views"
-    app.set "view engine", "jade"
-    app.set "view options", layout: false
-    app.use express.favicon()
-    app.use express.bodyParser()
-    app.use express.methodOverride()
-    app.use app.router
-    app.use express.static(path.join(__dirname, '..', "public"))
+  #sessionStore = new MongoStore url:'mongodb://localhost/opentorrent'
+  sessionStore = new express.session.MemoryStore()
+
+  app.set "port", process.env.PORT || 3000
+  app.set "views", "#{__dirname}/views"
+  app.set "view engine", "jade"
+  app.set "view options", layout: false
+  app.use express.favicon()
+  app.use express.bodyParser()
+  app.use express.methodOverride()
+  app.use express.cookieParser 'somesecret'
+  app.use express.session secret:'somesecret', store:sessionStore
+  app.use express.static(path.join(__dirname, '..', "public"))
+
+  everyauthConfig.configure app
+  app.use everyauth.middleware()
 
   mongoose.connect 'mongodb://localhost/opentorrent'
+
   router.route app
 
   app.configure "development", ->

@@ -2,11 +2,13 @@ _           = require 'underscore'
 Home        = require './home'
 ApiTorrent  = require './apiTorrents'
 Announce    = require './announce'
+Account     = require './account'
 
 exports.route = (app) ->
   home = new Home()
   announce = new Announce()
   apiTorrent = new ApiTorrent()
+  account  = new Account()
 
   app.get     '/',                                                    home.getHome
   app.get     '/announce/:torrentId/:userId',                         announce.getAnnounce
