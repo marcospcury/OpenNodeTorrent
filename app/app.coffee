@@ -8,6 +8,7 @@ exports.start = (cb) ->
   everyauthConfig = require './helpers/everyauthConfig'
   MongoStore = require('connect-mongo')(express)
 
+  mongoString = process.env.MONGOLAB_URI || 'mongodb://localhost/opentorrent'
   app = express()
   
   #sessionStore = new MongoStore url:'mongodb://localhost/opentorrent'
@@ -27,7 +28,7 @@ exports.start = (cb) ->
   everyauthConfig.configure app
   app.use everyauth.middleware()
 
-  mongoose.connect 'mongodb://localhost/opentorrent'
+  mongoose.connect mongoString
 
   router.route app
 

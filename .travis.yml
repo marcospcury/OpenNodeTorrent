@@ -1,7 +1,19 @@
----
-language: node_js
-node_js:
-- '0.10'
-before_script:
+node_js: 
+- "0.10"
+before_script: 
 - npm install bower
 - node_modules/bower/bin/bower install
+language: node_js
+after_success:
+  - wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+  - git remote add heroku git@heroku.com:bit-share.git
+  - echo "Host heroku.com" >> ~/.ssh/config
+  - echo "   StrictHostKeyChecking no" >> ~/.ssh/config
+  - echo "   CheckHostIP no" >> ~/.ssh/config
+  - echo "   UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+  - heroku keys:clear
+  - yes | heroku keys:add
+  - yes | git push heroku master
+env: 
+  global: 
+    secure: JqX53uX/88LExxXqJMuZ1uW//47Ihf9nIsbOXhmwfzvOG/2aVIOUPe5e6V4aqTlTu++7vEBBufHIpAgXIdm2XGbC2HRyXdYYD+k3xUmbusrlvv6jjMFnyN+m7KoPYInP46MF/4C/Ldv4cacrCrC//lYoHOrGgXSpaURFoSn3nyo=
