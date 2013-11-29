@@ -1,4 +1,18 @@
-form(action='/account/login#{redirectTo}', method='post')
-  input#email(type='text', name=everyauth.password.loginFormFieldName, value=email, title="Informe seu e-mail.")
-  input#email(type='text', name=everyauth.password.passwordFormFieldName, value=email, title="Informe a senha")
-  input(type='submit')
+doctype 5
+html
+  head
+    title=".:BitShare:."
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/javascripts/lib/bootstrap/dist/css/bootstrap.min.css')
+    block header
+  body
+    .container
+      form.form-signin(action='/account/login#{redirectTo}', method='post')
+        if ('undefined' !== typeof errors && errors.length)
+          div.alert.alert-warning
+            ul#errors
+              - each error in errors
+                li.error= error
+        input.form-control#email(type='text', name=everyauth.password.loginFormFieldName, value=email, placeholder="Email address", required)
+        input.form-control#password(type='password', name=everyauth.password.passwordFormFieldName, placeholder="Password", required)
+        button.btn.btn-lg.btn-primary.btn-block(type="submit") Log in

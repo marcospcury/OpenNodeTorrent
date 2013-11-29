@@ -36,6 +36,13 @@ module.exports = (grunt) ->
           src: ['**/*.!(coffee)']
           dest: 'dist/'
           }]
+      public:
+        files: [{
+          expand: true
+          cwd: 'public/'
+          src: ['**/*.!(coffee)']
+          dest: 'compiledPublic/'
+          }]
 
     mochacov:
       options:
@@ -134,7 +141,7 @@ module.exports = (grunt) ->
     changedFiles[filepath] = action
     onChange()
 
-  grunt.registerTask 'compile', ['coffee', 'copy']
+  grunt.registerTask 'compile', ['coffee', 'copy:main']
   grunt.registerTask 'compile:client', ['coffee:public']
   grunt.registerTask 'compile:server', ['coffee:app']
   grunt.registerTask 'compile:test', ['coffee:test']

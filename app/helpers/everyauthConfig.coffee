@@ -1,5 +1,6 @@
 path = require 'path'
 everyauth = require 'everyauth'
+User = require '../models/users'
 
 exports.configure = (app) ->
   everyauth.password.configure
@@ -22,7 +23,19 @@ exports.configure = (app) ->
     registerUser: (newUserAttrs) ->
     authenticate: (email, password) ->
       cb = @Promise()
-      cb.fulfill _id:'123', name:'user'
+      errors = []
+      errors.push "Email is required" unless email?
+      errors.push "Password is required" unless password?
+      return cb.fulfill errors if errors.length isnt 0
+      User.findByEmail email.toLowerCase(), (err, user) ->
+        return cb.fulfill [err] if err?
+        return cb.fulfill ['Login failed: invalid email'] unless user?
+        user.verifyPassword password, (error, success) ->
+          return cb false if error?
+          if success
+            cb.fulfill user
+          else
+            cb.fulfill ['Login failed: invalid password']
       cb
     respondToLoginSucceed: (res, user, data) ->
       return unless user?
@@ -32,6 +45,7 @@ exports.configure = (app) ->
         @redirect res, '/'
 
   everyauth.everymodule.findUserById (userId, cb) ->
-    cb null, _id:userId, name:'user'
+    User.findById userId, (error, user) ->
+      cb null, user
 
   everyauth.everymodule.userPkey '_id'
